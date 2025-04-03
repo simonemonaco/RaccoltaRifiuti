@@ -3,6 +3,6 @@ sqlite3
 pandas
 folium
 streamlit-folium
-pillow
+Pillow
 geocoder
-nominatim-api
+requests
