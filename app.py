@@ -157,12 +157,17 @@ def icon_from_size(size):
         return folium.Icon(color="darkred", prefix='fa', icon="truck")
     
 with tab1:
+    from folium import plugins
     st.subheader("Mappa")
     fg = folium.FeatureGroup(name="Rifiuti")
+    marker_cluster = plugins.MarkerCluster().add_to(fg)
     m = folium.Map(location=[45.236, 8.012], zoom_start=13.5)
-    fg.add_child(folium.Marker(user_location, popup="La tua posizione", 
+    # fg.add_child(folium.Marker(user_location, popup="La tua posizione", 
+    #               icon=folium.Icon(color="blue", prefix='fa', icon='user')
+    #               ))
+    folium.Marker(user_location, popup="La tua posizione", 
                   icon=folium.Icon(color="blue", prefix='fa', icon='user')
-                  ))
+                  ).add_to(marker_cluster)
     for _, row in df.iterrows():
         img_data = base64.b64encode(row["image"]).decode()
         img_html = f'<img src="data:image/png;base64,{img_data}" width="150px">'
@@ -175,11 +180,15 @@ with tab1:
         {img_html}
         """
         popup = folium.Popup(IFrame(popup_html, width=200, height=250), max_width=200)
-        fg.add_child(
+        # fg.add_child(
+        # folium.Marker(
+        #     [row["latitude"], row["longitude"]], icon=icon_from_size(row["size"]),
+        #     popup=popup
+        # ))
         folium.Marker(
             [row["latitude"], row["longitude"]], icon=icon_from_size(row["size"]),
             popup=popup
-        ))
+        ).add_to(marker_cluster)
     # print len of fg children
     # folium_static(m)
     out = st_folium(
