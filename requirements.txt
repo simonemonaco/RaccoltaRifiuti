@@ -1,0 +1,8 @@
+streamlit
+sqlite3
+pandas
+folium
+streamlit-folium
+pillow
+geocoder
+nominatim-api
