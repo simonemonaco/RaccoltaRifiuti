@@ -180,8 +180,8 @@ with tab1:
         popup_html = f"""
         <h3>{row['address']}</h3>
         <b>Dimensioni:</b> {row['size']}<br>
-        <b>Raccolto:</b> <i class="fa-solid {'fa-circle-check' if }"></i>
-        {}<br>
+        <b>Raccolto:</b> <i class="fa-solid {'fa-circle-check' if row['collected'] else 'fa-circle-xmark'}" style="color: {'green' if row['collected'] else 'red'}"></i>
+        <br>
         {f"<b>Note:</b> {row['notes']}<br>" if row['notes'] else ""}
         <b>Ultimo avvistamento:</b> {row['last_check']}<br>
         {img_html}
