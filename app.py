@@ -113,7 +113,13 @@ def get_user_location():
     return [45.236, 8.012]  # Default to Saluggia
 
 user_location = get_user_location()
+css = '''
+I'm importing the font-awesome icons as a stylesheet!                                                                                                                                                       
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">'''
+st.write(css, unsafe_allow_html=True)
 # Main page - Show collection points
+
+
 st.title("🗑️ Raccolta Rifiuti")
 conn = sqlite3.connect("collection_points.db")
 df = pd.read_sql_query("SELECT * FROM collection_points", conn)
@@ -174,9 +180,10 @@ with tab1:
         popup_html = f"""
         <h3>{row['address']}</h3>
         <b>Dimensioni:</b> {row['size']}<br>
-        <b>Collected:</b> {row['collected']}<br>
-        {f"<b>Notes:</b> {row['notes']}<br>" if row['notes'] else ""}
-        <b>Last Check:</b> {row['last_check']}<br>
+        <b>Raccolto:</b> <i class="fa-solid {'fa-circle-check' if }"></i>
+        {}<br>
+        {f"<b>Note:</b> {row['notes']}<br>" if row['notes'] else ""}
+        <b>Ultimo avvistamento:</b> {row['last_check']}<br>
         {img_html}
         """
         popup = folium.Popup(IFrame(popup_html, width=200, height=250), max_width=200)
@@ -205,6 +212,33 @@ with tab1:
 # Column 2 - Clickable list
 with tab2:
     st.subheader("Punti da raccogliere")
+
+    # create a button do download the database as csv and the image as zip with all metadata
+    st.download_button(
+        label="Scarica CSV",
+        data=df.to_csv(index=False).encode('utf-8'),
+        file_name='collection_points.csv',
+        mime='text/csv',
+    )
+    # create a zip file with all images
+    import zipfile
+    import os
+    zip_file = io.BytesIO()
+    with zipfile.ZipFile(zip_file, 'w') as zf:
+        for index, row in df.iterrows():
+            image = Image.open(io.BytesIO(row["image"]))
+            image_path = f"image_{index}.png"
+            image.save(image_path)
+            zf.write(image_path, arcname=image_path)
+            os.remove(image_path)  # Remove the file after adding to the zip
+    zip_file.seek(0)  # Reset the pointer to the beginning of the BytesIO object
+    # create a download button for the zip file
+    st.download_button(
+        label="Scarica ZIP",
+        data=zip_file,
+        file_name='collection_points.zip',
+        mime='application/zip',
+    )
     for index, row in df.iterrows():
         expander = st.expander(f"Punto {index+1}: {row['address']}", expanded=False)
         with expander:
