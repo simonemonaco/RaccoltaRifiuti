@@ -7,3 +7,4 @@ geocoder
 requests
 psycopg2-binary
 streamlit-authenticator
+pyxlsb
